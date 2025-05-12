@@ -1,0 +1,33 @@
+### **New Development – Driver Mobile App**
+- Profile management (update personal details)  
+- Password reset and account recovery  
+- View assigned deliveries with details  
+- Start Delivery (Initiate assigned route)  
+- Mark as Delivered (Complete order)  
+- Upload proof of delivery (photo, signature)  
+- Cancel Delivery (Driver cancels with reason)  
+- Mark as Undeliverable (Select reason, e.g., customer unavailable, incorrect address)  
+- Live GPS tracking of driver  
+- Navigation to delivery locations (Google Maps)  
+- Route optimization for multiple deliveries  
+- Geo-fencing for delivery zones  
+- SMS/Push notifications to customers  
+- In-app chat with dispatch/admin  
+- Alerts for new orders, order updates, and delays  
+- Barcode/QR code scanning for package verification  
+- Auto-match scanned package to assigned route  
+- Option to send unlisted packages to dispatcher for approval  
+- Ability to work in areas with low/no connectivity - to upload signature proof  
+- Daily summary of completed deliveries  
+- Distance traveled during shift  
+
+---
+
+### **Existing Portal Enhancement – Admin Web Portal**
+- Admin Web Portal Enhancement  
+- Enhanced Route Assignment: Assign routes based on delivery zones with map-based route creation (ability to draw boundaries for delivery zone)  
+- Role-Based Access Control: Subdivide roles with custom permissions (e.g., limited dispatcher access).  
+- Improved Reporting & Analytics: Dashboard updates, real-time delivery tracking, and filterable reports.  
+- Reassign, Cancel, Update Deliveries: Flexibility to manage delivery statuses efficiently.  
+- Approval Workflow for Unlisted Packages: Ensure proper validation for additional deliveries  
+

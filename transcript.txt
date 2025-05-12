@@ -1,0 +1,113 @@
+
+## **Meeting Summary: Primetime Functional Walkthrough (April 21, 2025)**
+
+### **Participants:**
+- **Carlos** – Owner, Primetime  
+- **Christina Strong** – Operations Director  
+- **Vanesa Mendez** – Administrative Director  
+- **Kuldeep Rajpurohit** – Technical Architect  
+- **Nitin** – React Native Developer  
+- **Nikita** – PHP Developer  
+- **Gaurav Singh Panwar** – UX Lead  
+- **Abhinav Sharma** – Coordinator
+
+---
+
+### **1. Purpose of Meeting**
+Vanesa initiated the meeting to demonstrate the three key user roles in the delivery platform:
+- **Pharmacy/Partner login**
+- **Driver login**
+- **Admin login**
+
+The walkthrough focused on core workflows and issues Primetime faces with its current system.
+
+---
+
+### **2. Partner Login (Pharmacy Access)**
+- Each pharmacy has a unique login.
+- Authentication includes a secure 2FA process.
+- Partners can:
+  - Upload delivery lists via spreadsheets.
+  - Add deliveries individually.
+  - View, print, and manage today's delivery list.
+  - See delivery types: Regular, Express, Rush.
+- Current pain point: Messaging consistency and delivery tracking accuracy.
+
+---
+
+### **3. Driver Experience**
+- Driver app currently accessed via web.
+- Drivers:
+  - View their assigned deliveries (by zone).
+  - See visual indicators (e.g., color codes for Express).
+  - Mark deliveries with statuses like "Undeliverable" and add notes.
+  - Currently **no route optimization**; drivers use the third-party app “**Road Warrior**” to manually optimize.
+
+**Future Enhancements Requested:**
+- Mobile app with built-in route optimization.
+- Scanning capability (QR/barcode) to verify package delivery.
+- OCR scanning for **proof of package delivery**.
+- Automatic assignment based on scanned packages and zone.
+
+---
+
+### **4. Admin Portal Walkthrough**
+- Accessible to only **Carlos, Christina, Vanesa**.
+- Admins can:
+  - Create and manage zones (via ZIP codes).
+  - Assign packages manually or by zone.
+  - Access delivery history across pharmacies.
+  - Edit driver profiles and reassign zones.
+- Current challenge: **Manual assignment** of each package is tedious.
+
+---
+
+### **5. Zones & Routing**
+- Zones are defined by ZIP codes.
+- Some ZIP codes may overlap across zones.
+- Need for a **GIS-based mapping interface** to define and manage zones visually.
+- Admins should be able to assign zones and filter by delivery types and pharmacy.
+
+---
+
+### **6. Mobile App Requirements**
+Outlined by Gaurav and the team:
+- Modular UX flow based on actual user (driver) behavior.
+- Admins would benefit from configurable branding (logo-based color themes).
+- Requirement to minimize clicks for major tasks.
+- Suggestion to create wireframes, review journeys with client input, then proceed to hi-fi designs.
+
+Vanesa mentioned she has personally performed many deliveries and can provide accurate feedback. Still, Gaurav requested a potential 30-min interview with a real driver to validate the pain points and UX.
+
+---
+
+### **7. PHP Upgrade Discussion**
+- Christina requested a follow-up discussion on backend suggestions including PHP upgrades.
+- Abhinav confirmed that **two options** for the PHP upgrade will be shared for review.
+- Cost estimates and compliance impacts to be discussed in the next call.
+
+---
+
+### **8. HIPAA Compliance**
+- Needs further discussion.
+- Primetime acknowledged receipt of the compliance framework via email and agreed to revisit the topic on Thursday.
+
+---
+
+### **9. Key Requests by Client**
+- Dispatcher login with **limited backend access**.
+- Scanning-based automation to reduce manual admin dependency.
+- Built-in route optimization (eliminating the need for Road Warrior).
+- Improved messaging consistency and delivery update accuracy.
+- Quick-print and search functionality for daily delivery sheets.
+- Zone management via visual maps with drag-and-drop boundaries.
+
+---
+
+### **10. Next Steps**
+- Team to share:
+  - UX questions
+  - PHP upgrade options and estimates
+  - Design blueprint plan
+- Next meeting confirmed for **Thursday, 9 AM EST**.
+
