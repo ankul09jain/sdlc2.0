@@ -5,12 +5,6 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 import google.generativeai as genai
 import gradio as gr
 from bs4 import BeautifulSoup
-import os
-from office365.runtime.auth.client_credential import ClientCredential
-from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.files.file import File
-import requests
-import msal
 
 
 # Set your OpenAI API key
