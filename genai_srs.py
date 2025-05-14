@@ -5,6 +5,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 import google.generativeai as genai
 import gradio as gr
 from bs4 import BeautifulSoup
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
 
 
 # Set your OpenAI API key
@@ -25,6 +27,33 @@ def generate_proposal(prompt):
     )
     return response['choices'][0]['message']['content']
 
+def upload_to_s3(file_path, bucket_name="sdlc2.0-artifacts", s3_key="discovery_phase"):
+
+    # Initialize a session using Amazon S3
+    s3 = boto3.client('s3')
+
+    try:
+        # Upload the file
+        s3.upload_file(file_path, bucket_name, s3_key)
+        print(f"File {file_path} uploaded to {bucket_name}/{s3_key}")
+
+        # Generate a presigned URL for the uploaded file
+        url = s3.generate_presigned_url('get_object',
+                                        Params={'Bucket': bucket_name, 'Key': s3_key},
+                                        ExpiresIn=3600)  # URL expires in 1 hour
+        return url
+
+    except FileNotFoundError:
+        print(f"The file {file_path} was not found.")
+        return None
+    except NoCredentialsError:
+        print("Credentials not available.")
+        return None
+    except ClientError as e:
+        print(f"Client error: {e}")
+        return None
+
+
 
 def generate_proposal_gemini(prompt):
     # Configure the API
@@ -40,23 +69,37 @@ def generate_proposal_gemini(prompt):
     
     return response.text
 
-def markdown_to_docx(markdown_text, output_path, project_name):
+def markdown_to_docx(doc_type, markdown_text, output_path, project_name):
     # Convert markdown to HTML
     html = markdown2.markdown(markdown_text)
     # Create a new Word document
-    template_path = "SRSTemplate.docx"
+    if doc_type=="s":
+        template_path = "SRSTemplate.docx"
+    elif doc_type=="p":
+        template_path = "template.docx"
     doc = Document(template_path)
 
-    # Add a header with the project name
+    # Add a header with the project name 
     section = doc.sections[-1]
     header = section.header
     header_paragraph = header.paragraphs[0]
-    header_paragraph.text = f"Project Name: {project_name} \nSoftware Requirements Specifications"
+    if doc_type == "s":
+        header_paragraph.text = f"Project Name: {project_name} \nSoftware Requirements Specifications"
+    elif doc_type == "p":
+        header_paragraph.text = f"{project_name}: Proposal Doc"
     header_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     # Add content (simple approach: strip HTML tags, or use a library for better conversion)
     soup = BeautifulSoup(html, "html.parser")
-    for element in soup.descendants:
+    
+    # Process only direct children of the body to avoid duplication
+    # Get all top-level elements (direct children of body or html)
+    if soup.body:
+        elements = soup.body.find_all(recursive=False)
+    else:
+        elements = soup.find_all(recursive=False)
+    
+    for element in elements:
         if element.name == 'h1':
             doc.add_heading(element.get_text(), level=1)
         elif element.name == 'h2':
@@ -75,8 +118,14 @@ def markdown_to_docx(markdown_text, output_path, project_name):
                 doc.add_paragraph(li.get_text(), style='List Number')
         elif element.name == 'p':
             doc.add_paragraph(element.get_text())
+
     # Save the document
     doc.save(output_path)
+    if doc_type=="p":
+        download_link = upload_to_s3(output_path)
+    else:
+        download_link=""
+    return download_link
 
 def generate_srs_via_gradio(project_name, client_name, high_level_scope, cloud_provider):
     """
@@ -233,7 +282,7 @@ Here is the recommended structure and guidance for each section of the SRS, insp
 
         # Convert markdown to .docx file
         output_file_gradio = f"SRS_{project_name}.docx"
-        markdown_to_docx(markdown_content, output_file_gradio, project_name)
+        result = markdown_to_docx("s", markdown_content, output_file_gradio, project_name)
         print(f"\n[Gradio] Word document saved to {output_file_gradio}")
 
         return f"SRS document generated successfully for '{project_name}'.\nMarkdown: {md_file_gradio}\nWord: {output_file_gradio}"
@@ -242,7 +291,7 @@ Here is the recommended structure and guidance for each section of the SRS, insp
         return f"Error generating SRS: {e}"
 
 
-def generate_proposal_via_gradio(industry_name,client_name, client_request, tech_stack, average_hourly_rate, estimation_notes=None):
+def generate_proposal_via_gradio(industry_name,client_name, client_request, tech_stack, average_hourly_rate, estimation_notes):
     try:
         print(f"\n[Gradio Proposal] Received request for: {client_name}")
         
@@ -263,7 +312,7 @@ def generate_proposal_via_gradio(industry_name,client_name, client_request, tech
         * **Guidance:** Create a concise title for the proposal, incorporating the Industry Name and Client Name.
 
         **Executive Summary:**
-        * **Guidance:** Provide a brief overview. Summarize the problem addressed by the Client Request, the proposed solution, the scope of work (creatively define typical responsibilities based on the project type and client/your roles), and key benefits for the Client Name in the {{industry_name}} sector. Keep the content within 100 words.
+        * **Guidance:** Provide a brief overview. Summarize the problem addressed by the Client Request, the proposed solution, the scope of work (creatively define typical responsibilities based on the project type and client/your roles), and key benefits for the Client Name in the {industry_name} sector. Keep the content within 100 words.
 
         **Project Overview:**
         * **Guidance:** Describe the project context based on the Client Request, the objectives, and the Client Name's goals. Explain the value proposition of the proposed solution for their specific needs in the {{industry_name}} sector.
@@ -276,13 +325,13 @@ def generate_proposal_via_gradio(industry_name,client_name, client_request, tech
         * **Content to include:** Describe the main modules and features of the solution and keep it concise.
 
         **Proposed Technology Stack & Tools:**
-        * **Guidance:** Think about the {{client_request}} core modules and features and briefly describe the technologies, frameworks, and tools you propose to use, incorporating the Preferred Technology Stack. Mention the rationale for selection based on the Client Request and {{industry_name}} needs. Keep the content within 150 words. Structure the content in bullet points in a way that is easy to understand and follow.
+        * **Guidance:** Think about the {client_request} core modules and features and briefly describe the technologies, frameworks, and tools you propose to use, incorporating the Preferred Technology Stack. Mention the rationale for selection based on the Client Request and {industry_name} needs. Keep the content within 150 words. Structure the content in bullet points in a way that is easy to understand and follow.
 
         **Assumptions & Dependencies:**
         * **Guidance:** List any assumptions made about the Client Name's environment, data, or resources related to the Client Request. List any dependencies typically required for project success, including dependencies related to client responsibilities (creatively defined).
 
         **Effort Estimation:**
-        * **Guidance:** Creatively estimate a plausible Timeline range (e.g., in weeks or hours) for a project of this scope, considering the Client Request and Preferred Technology Stack. **Estimate the required resources across key roles:** Project Management, Quality Assurance, Developers (consider different levels if appropriate based on scope), and DevOps. **Calculate the estimated cost range based on the estimated timeline, resource allocation, and the provided Average Hourly Rate.** Present the timeline and cost. Include any Additional Notes/Disclaimers for Effort Estimation. Keep the final presented content concise (under 100 words). Structure the content in bullet points in a way that is easy to understand and follow.
+        * **Guidance:** {estimation_notes} \n Present the timeline and cost. Include any Additional Notes/Disclaimers for Effort Estimation. Keep the final presented content concise (under 100 words). Structure the content in bullet points in a way that is easy to understand and follow. 
 
         **Conclusion:**
         * **Guidance:** Write a concluding statement reinforcing commitment to the Client Name and expressing enthusiasm for collaboration on the project addressing the Client Request.
@@ -317,10 +366,10 @@ def generate_proposal_via_gradio(industry_name,client_name, client_request, tech
         output_file_proposal = f"Proposal_{safe_project_name}.docx"
         # Assuming markdown_to_docx is available in the scope (e.g., imported)
         # and uses a template.docx from "Desktop/template.docx" as per genai.py context
-        markdown_to_docx(markdown_content, output_file_proposal, project_name="Client Proposal doc")
+        download_link = markdown_to_docx("p", markdown_content, output_file_proposal, client_name)
         print(f"\n[Gradio Proposal] Word document saved to {output_file_proposal}")
 
-        return f"Proposal document generated successfully for '{client_name}'.\nMarkdown: {md_file_proposal}\nWord: {output_file_proposal}"
+        return f"Proposal document generated successfully for '{client_name}'.\nProposal doc Download Link: {download_link}"
     except Exception as e:
         print(f"[Gradio Proposal] Error during proposal generation: {e}")
         # For more detailed debugging, one might add:
@@ -331,7 +380,7 @@ def generate_proposal_via_gradio(industry_name,client_name, client_request, tech
 
 if __name__ == "__main__":
 
-    print("\n=== SRS Document Generator ===\n")
+    print("\n=== SRS & Proposal Document Generator ===\n")
 
     # markdown_content =""
     # #Save markdown content to .md file
@@ -352,7 +401,7 @@ if __name__ == "__main__":
             gr.Textbox(label="High-Level System Scope", placeholder="Enter the project goal)", lines=5),
             # gr.Textbox(label="Project Transcript Location", placeholder="Enter the Project transcript file location)"),
             gr.Dropdown(
-                label="Cloud Provider",
+                label="Cloud PLatform",
                 choices=["AWS", "Azure", "GCP"],
                 value="AWS",  # Default value
                 interactive=True
@@ -366,16 +415,16 @@ if __name__ == "__main__":
     # Define the handler function for proposal generation
     
     # Define the Gradio interface for proposal generation
+    estimation_notes = """Creatively estimate a plausible Timeline range (e.g., in weeks) for a project of this scope, considering the Client Request and Preferred Technology Stack. **Estimate the required resources across key roles:** Project Management, Quality Assurance, Developers (consider different levels if appropriate based on scope), and DevOps. **Calculate the estimated cost range based on the estimated timeline, resource allocation, and the provided Average Hourly Rate.** """
     proposal_interface = gr.Interface(
         fn=generate_proposal_via_gradio,
         inputs=[
             gr.Textbox(label="Industry Name"),
             gr.Textbox(label="Client Name"),
-            gr.Textbox(label="Client Request"),
-            gr.Textbox(label="Tech Stack"),
+            gr.Textbox(label="Client Request", placeholder="What is the project goal?"),
+            gr.Textbox(label="Tech Stack", placeholder = "eg. AWS, Python, OpenAI GPT4o, ReactJS"),
             gr.Textbox(label="Average Hourly Rate($)"),            
-            gr.Textbox(label="Project Goal", lines=5),
-            gr.Textbox(label="Estimation Notes(Optional)"),
+            gr.Textbox(label="Estimation Notes(Please review)", value=estimation_notes, lines=10, autofocus=True),
 
         ],
         outputs=gr.Textbox(label="Generation Status and File Paths", lines=3),
