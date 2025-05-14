@@ -425,10 +425,10 @@ if __name__ == "__main__":
             gr.Textbox(label="Client Request", placeholder="What is the project goal?"),
             gr.Textbox(label="Tech Stack", placeholder = "eg. AWS, Python, OpenAI GPT4o, ReactJS"),
             gr.Textbox(label="Average Hourly Rate($)"),            
-            gr.Textbox(label="Estimation Notes(Please review)", value=estimation_notes, lines=10, autofocus=True),
+            gr.Textbox(label="Estimation Notes(Please review)", value=estimation_notes, lines=5, autofocus=True),
 
         ],
-        outputs=gr.Textbox(label="Generation Status and File Paths", lines=3),
+        outputs=gr.Textbox(label="Generation Status and File Paths", lines=10),
         title="Client Proposal Generator",
         description="Enter project details to generate a proposal document."
     )
