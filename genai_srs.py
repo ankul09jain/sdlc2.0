@@ -27,12 +27,13 @@ def generate_proposal(prompt):
     )
     return response['choices'][0]['message']['content']
 
-def upload_to_s3(file_path, bucket_name="sdlc2.0-artifacts", s3_key="discovery_phase"):
+def upload_to_s3(file_path, filename, bucket_name="sdlc2.0-artifacts", s3_key="discovery_phase"):
 
     # Initialize a session using Amazon S3
     s3 = boto3.client('s3')
 
     try:
+        s3_key = s3_key + "/" + filename
         # Upload the file
         s3.upload_file(file_path, bucket_name, s3_key)
         print(f"File {file_path} uploaded to {bucket_name}/{s3_key}")
@@ -122,7 +123,7 @@ def markdown_to_docx(doc_type, markdown_text, output_path, project_name):
     # Save the document
     doc.save(output_path)
     if doc_type=="p":
-        download_link = upload_to_s3(output_path)
+        download_link = upload_to_s3(output_path, project_name+"_Proposal.docx")
     else:
         download_link=""
     return download_link
