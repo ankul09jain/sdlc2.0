@@ -598,7 +598,7 @@ if __name__ == "__main__":
 
 
     print("\nGradio interface launching...")
-    tabbed_interface.launch(server_name="0.0.0.0", server_port=7881)
+    tabbed_interface.launch(server_name="0.0.0.0", server_port=7871)
 
 
 
