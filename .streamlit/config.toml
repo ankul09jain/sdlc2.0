@@ -1,0 +1,7 @@
+[theme]
+base = "light"
+primaryColor = "#1F78D1"                    # Main CTA color (blue)
+backgroundColor = "#F5FAFF"                 # Light blueish background
+secondaryBackgroundColor = "#E1EEFA"        # Cards/widgets
+textColor = "#1A1A1A"                       # Dark gray/black
+font = "sans serif"
