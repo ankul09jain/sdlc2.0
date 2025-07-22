@@ -1,0 +1,11 @@
+markdown2
+python-docx
+beautifulsoup4
+boto3==1.34.96
+botocore==1.34.96
+openai
+dotenv
+streamlit
+PyPDF2
+pandas
+

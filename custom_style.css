@@ -1,0 +1,170 @@
+/* 👔 Font & Layout */
+html, body, [class*="stApp"] {
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(to bottom right, #f2f7fc, #e1ecf7);
+color: #1A1A1A;
+margin: 0;
+padding: 0;
+}
+
+/* 🧾 Card Container */
+section.main > div {
+border: 1px solid #DDE6F0;
+background-color: #f3f6fa;;
+border-radius: 20px;
+padding: 1.5rem;
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* 🔷 Input Fields */
+input, textarea, select {
+background-color: #ffffff !important;
+border: 1.5px solid #BBD7F1 !important;
+border-radius: 10px !important;
+padding: 8px 12px !important;
+font-size: 15px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+/* 📂 Upload Boxes */
+div[data-testid="stFileUploader"] {
+    border: 2px dashed #BBD7F1;
+    background-color: #e9f1fb;
+    border-radius: 14px;
+    padding: 0.2rem 0.4rem !important; /* SIGNIFICANTLY REDUCED PADDING */
+    margin-bottom: 0.4rem !important; /* Further reduced margin */
+    transition: all 0.3s ease-in-out;
+    min-height: 50px !important; /* Reduced min-height, adjust as needed */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* Ensure no extra space inside from default Streamlit elements */
+    overflow: hidden; /* Hide anything that might overflow */
+}
+/* Target internal elements of file uploader to reduce their space */
+div[data-testid="stFileUploader"] .st-bd { /* Targets the "Drag and drop files here" text container */
+    margin-bottom: 0.15rem !important; /* Reduce space below text */
+    font-size: 0.85em !important; /* Slightly smaller font for text */
+}
+
+div[data-testid="stFileUploader"] .stButton > button { /* Targets the "Browse files" button */
+    padding: 0.25rem 0..25rem !important; /* Smaller button padding */
+    font-size: 0.5em !important; /* Smaller button font */
+    margin-top: 0 !important; /* Remove top margin if any */
+}
+
+div[data-testid="stFileUploader"] .st-bq { /* Targets the "Limit XMB per file..." text */
+    font-size: 0.3em !important; /* Smaller font for limit text */
+    margin-top: -0.25rem !important; /* Pull it up slightly */
+    margin-bottom: 0.1rem !important; /* Small bottom margin */
+}                
+
+div[data-testid="stFileUploader"]:hover {
+background-color: #E5F0FA;
+box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* 🚀 Button Styling */
+.stButton > button {
+background: linear-gradient(to right, #1F78D1, #49A3F1);
+border: none;
+color: #fff;
+font-weight: 600;
+font-size: 10px;
+border-radius: 10px;
+padding: 0.6rem 1.2rem;
+margin-top: 0.75rem;
+box-shadow: 0 4px 10px rgba(31, 120, 209, 0.25);
+transition: all 0.2s ease-in-out;
+}
+
+.stButton > button:hover {
+background: linear-gradient(to right, #1463b3, #2d8ed8);
+}
+
+/* 🎯 Section Headings */
+h1, h2, h3 {
+color: #1F78D1;
+font-weight: 700;
+margin-bottom: 0.4rem;
+}
+
+h1 {
+font-size: 2rem;
+letter-spacing: -0.5px;
+}
+            
+h2 { /* Explicitly set for subheaders like "Upload Files" */
+    font-size: 1.5rem; /* Common size for h2 */
+    margin-top: 1rem; /* Adjust top margin for subheaders */
+    margin-bottom: 0.6rem; /* Adjust bottom margin for subheaders */
+}
+
+/* 📏 Field Labels */
+label {
+font-weight: 600;
+margin-bottom: 0.3rem;
+color: #2A2A2A;
+font-size: 0.95em;
+}
+
+/* 🧱 Grid-like Spacing */
+.block-container {
+padding: 1.5rem 2rem 2rem 2rem;
+}
+
+
+/* 💠 Slightly darker container background */
+section.main > div {
+background-color: #f3f6fa; /* Slightly deeper than white */
+border: 1px solid #D6E4F5;
+border-radius: 20px;
+padding: 2rem;
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Optional: darker file upload areas for visual grouping */
+div[data-testid="stFileUploader"] {
+background-color: #e9f1fb;
+border: 2px dashed #BBD7F1;
+border-radius: 14px;
+padding: 1rem;
+}
+
+/* Target the input that was previously the "white box" */
+input[role="combobox"][aria-label="☁️ Cloud Platform"] {
+    opacity: 0 !important; /* Make it invisible */
+    pointer-events: none !important; /* Allow clicks to pass through */
+    width: 0 !important; /* Collapse its width to zero */
+    padding: 0 !important; /* Remove any padding */
+    margin: 0 !important; /* Remove any margin */
+    border: none !important; /* Remove border */
+    height: 0 !important; /* Collapse its height to zero */
+    min-height: 0 !important; /* Ensure min-height is zero */
+    /* If there's still a tiny gap, you might need to adjust parent's flex/grid properties */
+}
+
+/* Sometimes, a parent div also needs to collapse its space if the input was the sole occupant */
+/* Check your inspect element: if the input is within a div like <div class="some-wrapper"><input ...></div> */
+/* and that wrapper is causing space, you might need to target it: */
+/*
+.st-cr > div:has(input[role="combobox"][aria-label="☁️ Cloud Platform"]) {
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+*/
+/* The :has() pseudo-class is newer and might not be supported in all browsers,
+    but is excellent for this kind of scenario if available.
+    If not, we rely on the input's own shrinking. */
+
+/* Ensure the main selectbox display area remains clickable */
+/* This is more about ensuring no hidden element is covering it */
+[data-baseweb="select"] {
+    z-index: 1; /* Ensure the actual clickable selectbox part is on top */
+} 
